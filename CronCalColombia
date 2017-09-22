@@ -1,0 +1,548 @@
+
+var http = require('http');
+http.createServer(function (request, response) {
+    //Modulos requeridos
+    var moment = require('moment-timezone');
+    var cron = require('node-cron');
+    var request = require('request');
+
+    //min-hora-dia-mes
+    cron.schedule('12 16 22 9 *', function () {
+        envio();
+    });
+
+
+    function envio() {
+
+        var http = require('http');
+
+        var data = JSON.stringify({
+            'id': '2'
+        });
+
+        var options = {
+            host: 'localhost',
+            port: '49527',
+            path: '/Default.aspx/GetCurrentTime',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+                //'Content-Length': data.length
+            }
+        };
+
+        var req = http.request(options, function (res) {
+            console.log(res);
+        });
+
+        //req.write(data);
+        req.end();
+    }
+
+
+
+
+
+
+
+
+    ////response.writeHead(200, { 'Content-Type': 'text/plain' });
+    //response.writeHead(200, { "Content-Type": "application/json" });
+
+    ////Hora inicial
+    //var horaInicial = "2017-01-01";
+    ////Hora final
+    //var horaFinal = "2017-12-31";
+
+    ////calendario(horaInicial, horaFinal);
+  
+    ///*Calendario*/
+    //function calendario(horaInicial, horaFinal)
+    //{
+    //    var x = calendarioColombia(horaInicial, horaFinal);
+    //        x.forEach(function (valor, indice) {
+    //            response.write(valor);
+
+    //        });
+    //        response.end();  
+    //}
+    ///*calcularPascua*/
+    //function calcularPascua(Anio) {
+
+    //    var a, b, c, d, e;
+    //    var m = 24, n = 5;
+
+
+    //    if (Anio >= 1583 && Anio <= 1699) {
+    //        m = 22;
+    //        n = 2;
+    //    }
+    //    else if (Anio >= 1700 && Anio <= 1799) {
+    //        m = 23;
+    //        n = 3;
+    //    }
+    //    else if (Anio >= 1800 && Anio <= 1899) {
+    //        m = 23;
+    //        n = 4;
+    //    }
+    //    else if (Anio >= 1900 && Anio <= 2099) {
+    //        m = 24;
+    //        n = 5;
+    //    }
+    //    else if (Anio >= 2100 && Anio <= 2199) {
+    //        m = 24;
+    //        n = 6;
+    //    }
+    //    else if (Anio >= 2200 && Anio <= 2299) {
+    //        m = 25;
+    //        n = 0;
+    //    }
+
+    //    a = Anio % 19;
+    //    b = Anio % 4;
+    //    c = Anio % 7;
+    //    d = ((a * 19) + m) % 30;
+    //    e = ((2 * b) + (4 * c) + (6 * d) + n) % 7;
+
+
+    //    var dia = d + e;
+
+
+    //    if (dia < 10) //Marzo
+    //    {
+    //        var mesMarzo = "03";
+    //        var diaCalculadoMarzo = dia + 22;
+    //        var fechaMarzo = Anio + "-" + mesMarzo + "-" + diaCalculadoMarzo;
+    //        return dateNew(fechaMarzo)
+    //    }
+    //    else //Abril
+    //    {
+
+    //        if (dia == 26)
+    //            dia = 19;
+    //        else if (dia == 25 && d == 28 && e == 6 && a > 10)
+    //            dia = 18;
+    //        else
+    //            dia -= 9;
+
+    //        var mesAbril = "04";
+    //        var diaCalculadoAbril = dia;
+    //        var fechaAbril = Anio + "-" + mesAbril + "-" + diaCalculadoAbril;
+
+
+    //        return dateNew(fechaAbril);
+
+    //    }
+    //}
+    ///*nueva date */
+    //function dateNew(fecha) {
+    //    var formatoFecha = moment.tz(fecha, "America/Bogota").format('YYYY-MM-DD');
+    //    return formatoFecha;
+    //}
+    ///*Dias festivo*/
+    //function DiasFestivos(iAnio) {
+
+    //    console.log(2017);
+    //    var Pascua = calcularPascua(iAnio);
+    //    console.log(Pascua);
+    //    var arrayDiasFestivos = new Array();
+
+    //    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "01" + "-" + "01"); //Primero de Enero
+    //    IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "01" + "-" + "09", false, true)); //Reyes magos
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"03"+"-"+"19",false,true)); //San Jose
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Sunday", Pascua, true, false)); //Domingo de Ramos
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Thursday", Pascua, true,true)); //Jueves Santo
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Friday", Pascua, true,true)); //Viernes Santo
+    //    //IncluirFecha(arrayDiasFestivos, Pascua); //Pascua
+    //    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "05" + "-" + "01"); //Dia del trabajo
+
+
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(42, 'day')); //Ascensión de Jesús
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(63, 'day')); //Corpus Christi
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(70, 'day')); //Sagrado Corazón
+
+
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "06" + "-" + "29")); //san Pedro y san Pablo
+    //    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "07" + "-" + "20"); //Grito de Independencia
+    //    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "07"); // Batalla de Boyacá
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio+"-"+"08"+"-"+ "15",false,false)); //Asuncion de la virgen
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Día de la Raza
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Todos los Santos
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "01",false,false)); //Independencia de Cartagena
+    //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "11",false,false)); //Independencia de Cartagena
+    //    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "08"); // Inmaculada Concepción
+    //    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "25"); // Navidad
+    //    console.log(arrayDiasFestivos);
+    //    return arrayDiasFestivos;
+    //}
+    ///*Incluir fecha*/
+    //function IncluirFecha(ListaDias, fecha) {
+    //    var fecha = dateNew(fecha);
+
+    //    var compara = compararArray(ListaDias, fecha);
+
+    //    if (compara === false) {
+    //        ListaDias.push(fecha);
+    //    }
+
+    //    return ListaDias;
+    //}
+    ///*Remover Array*/
+    //function removeItemFromArr(arr, item) {
+    //    return arr.filter(function (e) {
+    //        return e !== item;
+    //    });
+    //};
+    ///*compara Array*/
+    //function compararArray(ListaDias, elemento) {
+
+    //    if (ListaDias.length == 0) {
+    //        return false;
+    //    }
+
+    //    for (var i = 0; i < ListaDias.length ; i++) {
+
+    //        if (ListaDias[i] === elemento) {
+    //            return true;
+    //        }
+    //        return false
+    //    }
+
+    //}
+    ///*SiguienteDiaSemana*/
+    //function SiguienteDiaSemana(DiaSemana, fecha, haciaAtras, inclusive) {
+    //    var DayOfWeek = CalcularDiaSemana(fecha);
+
+    //    var fechaDate = moment.tz(fecha, "America/Bogota");
+
+    //    if (inclusive) {
+
+    //        if (DayOfWeek === DiaSemana) {
+
+    //            return fechaDate;
+    //        }
+
+    //    }
+    //    else {
+
+    //        if (haciaAtras === true) {
+    //            fechaDate = fechaDate.subtract(1, 'day');
+    //        }
+
+    //        else {
+    //            fechaDate = fechaDate.add(1, 'day');
+    //        }
+    //    }
+
+
+
+
+    //    if (DayOfWeek != DiaSemana) {
+
+    //        if (haciaAtras === false) {
+
+    //            fechaDate = fechaDate.subtract(1, 'day');
+
+    //        }
+    //        else {
+
+    //            fechaDate = fechaDate.add(1, 'day');
+    //        }
+    //    }
+
+    //    return fechaDate;
+    //}
+    ///*CalcularDiaSemana*/
+    //function CalcularDiaSemana(fecha) {
+    //    var dt = moment.tz(fecha, "America/Bogota").format('dddd');
+    //    return dt;
+    //};
+    ///*diasHabiles*/
+    //function diasHabiles(fechaInicio, fechaFinal) {
+    //    var ListdiasHabiles = new Array();
+
+    //    var FechaIni = moment.tz(fechaInicio, "America/Bogota");
+
+    //    var FechaFin = moment.tz(fechaFinal, "America/Bogota");
+
+    //    var xvDiferenciaFechas = FechaFin.diff(FechaIni, 'days') // 1
+
+    //    for (var i = 0; i < xvDiferenciaFechas; i++) {
+
+    //        var diaSemana = FechaIni.add(i, 'day').format('dddd').toString();
+
+    //        if ((diaSemana != 'Saturday') && (diaSemana != 'Sunday')) {
+    //            ListdiasHabiles.push(FechaIni.format('YYYY-MM-DD'));
+    //        }
+    //        FechaIni.subtract(i, 'day').format('dddd').toString();
+    //    }
+    //    return ListdiasHabiles;
+    //}
+    ///*calendarioColombia*/
+    //function calendarioColombia(fechaInicio, fechaFin) {
+    //    var anio = moment.tz(fechaInicio, "America/Bogota").format("YYYY");
+
+    //    var diasFestivoC = new Array();
+    //    var calendarioC = new Array();
+    //    var salida = new Array();
+
+    //    var arrayDiasHabiles = diasHabiles(fechaInicio, fechaFin);
+
+    //    var arrayDiasFestivos = DiasFestivos(anio);
+
+    //    var arr = "";
+
+    //    arrayDiasFestivos.forEach(function (valor, indice) {
+    //        arr = removeItemFromArr(arrayDiasHabiles, "2017-01-09");
+    //    });
+
+    //    return arr;
+
+    //}
+
+}).listen(8081);
+
+console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
+
+///*calcularPascua*/
+//function calcularPascua(Anio) {
+
+//    var a, b, c, d, e;
+//    var m = 24, n = 5;
+
+
+//    if (Anio >= 1583 && Anio <= 1699) {
+//        m = 22;
+//        n = 2;
+//    }
+//    else if (Anio >= 1700 && Anio <= 1799) {
+//        m = 23;
+//        n = 3;
+//    }
+//    else if (Anio >= 1800 && Anio <= 1899) {
+//        m = 23;
+//        n = 4;
+//    }
+//    else if (Anio >= 1900 && Anio <= 2099) {
+//        m = 24;
+//        n = 5;
+//    }
+//    else if (Anio >= 2100 && Anio <= 2199) {
+//        m = 24;
+//        n = 6;
+//    }
+//    else if (Anio >= 2200 && Anio <= 2299) {
+//        m = 25;
+//        n = 0;
+//    }
+
+//    a = Anio % 19;
+//    b = Anio % 4;
+//    c = Anio % 7;
+//    d = ((a * 19) + m) % 30;
+//    e = ((2 * b) + (4 * c) + (6 * d) + n) % 7;
+
+
+//    var dia = d + e;
+
+
+//    if (dia < 10) //Marzo
+//    {
+//        var mesMarzo = "03";
+//        var diaCalculadoMarzo = dia + 22;
+//        var fechaMarzo = Anio + "-" + mesMarzo + "-" + diaCalculadoMarzo;
+//        return dateNew(fechaMarzo)
+//    }
+//    else //Abril
+//    {
+
+//        if (dia == 26)
+//            dia = 19;
+//        else if (dia == 25 && d == 28 && e == 6 && a > 10)
+//            dia = 18;
+//        else
+//            dia -= 9;
+
+//        var mesAbril = "04";
+//        var diaCalculadoAbril = dia;
+//        var fechaAbril = Anio + "-" + mesAbril + "-" + diaCalculadoAbril;
+      
+
+//        return dateNew(fechaAbril);
+
+//    }
+//}
+///*nueva date */
+//function dateNew(fecha) {
+//    var formatoFecha = moment.tz(fecha, "America/Bogota").format('YYYY-MM-DD');
+//    return formatoFecha;
+//}
+///*Dias festivo*/
+//function DiasFestivos(iAnio) {
+    
+//    var Pascua = calcularPascua(iAnio);
+//    var arrayDiasFestivos = new Array();
+    
+//    IncluirFecha(arrayDiasFestivos, iAnio+"-"+"01"+"-"+"01"); //Primero de Enero
+//    IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"01"+"-"+"09",false,true)); //Reyes magos
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"03"+"-"+"19",false,true)); //San Jose
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Sunday", Pascua, true, false)); //Domingo de Ramos
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Thursday", Pascua, true,true)); //Jueves Santo
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Friday", Pascua, true,true)); //Viernes Santo
+//    //IncluirFecha(arrayDiasFestivos, Pascua); //Pascua
+//    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "05" + "-" + "01"); //Dia del trabajo
+
+
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(42, 'day')); //Ascensión de Jesús
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(63, 'day')); //Corpus Christi
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(70, 'day')); //Sagrado Corazón
+
+
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "06" + "-" + "29")); //san Pedro y san Pablo
+//    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "07" + "-" + "20"); //Grito de Independencia
+//    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "07"); // Batalla de Boyacá
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio+"-"+"08"+"-"+ "15",false,false)); //Asuncion de la virgen
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Día de la Raza
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Todos los Santos
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "01",false,false)); //Independencia de Cartagena
+//    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "11",false,false)); //Independencia de Cartagena
+//    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "08"); // Inmaculada Concepción
+//    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "25"); // Navidad
+
+//    return arrayDiasFestivos;
+//}
+///*Incluir fecha*/
+//function IncluirFecha(ListaDias, fecha)
+//{ 
+//    var fecha = dateNew(fecha);
+
+//    var compara = compararArray(ListaDias, fecha);
+   
+//    if (compara === false)
+//    {
+//        ListaDias.push(fecha);
+//    }
+        
+//    return ListaDias;
+//}
+///*Remover Array*/
+//function removeItemFromArr(arr, item) {
+//    return arr.filter(function (e) {
+//        return e !== item;
+//    });
+//};
+///*compara Array*/
+//function compararArray(ListaDias, elemento) {
+
+//    if (ListaDias.length == 0)
+//    {
+//        return false;
+//    }
+
+//    for (var i = 0; i < ListaDias.length ; i++) {
+        
+//        if (ListaDias[i] === elemento) {
+//            return true;
+//        }
+//        return false
+//    }
+
+//}
+///*SiguienteDiaSemana*/
+//function SiguienteDiaSemana(DiaSemana,fecha , haciaAtras, inclusive)
+//{
+//    var DayOfWeek = CalcularDiaSemana(fecha);
+    
+//    var fechaDate = moment.tz(fecha, "America/Bogota");
+     
+//            if (inclusive) {
+
+//                if (DayOfWeek === DiaSemana) {
+            
+//                    return fechaDate;
+//                }
+
+//            }
+//            else
+//            {
+            
+//                if (haciaAtras === true)
+//                {
+                   
+//                    fechaDate = fechaDate.subtract(1, 'day');
+//                }   
+
+//                else {
+             
+//                        fechaDate = fechaDate.add(1, 'day');
+//                    }
+//              }
+
+
+         
+           
+//            if (DayOfWeek != DiaSemana) {
+
+//                if (haciaAtras === false) {
+                    
+//                    fechaDate = fechaDate.subtract(1, 'day');
+                   
+//                }
+//                else {
+                    
+//                    fechaDate = fechaDate.add(1, 'day');
+//                }
+//            }
+         
+//           return fechaDate;
+//}
+///*CalcularDiaSemana*/
+//function CalcularDiaSemana(fecha) {
+//    var dt = moment.tz(fecha, "America/Bogota").format('dddd');
+//    return dt; 
+//};
+///*diasHabiles*/
+//function diasHabiles(fechaInicio,fechaFinal)
+//{
+//    var ListdiasHabiles = new Array();
+
+//    var FechaIni = moment.tz(fechaInicio, "America/Bogota");
+ 
+//    var FechaFin = moment.tz(fechaFinal, "America/Bogota");
+  
+//    var xvDiferenciaFechas = FechaFin.diff(FechaIni, 'days') // 1
+   
+//    for (var i = 0; i < xvDiferenciaFechas; i++) {
+
+//        var diaSemana = FechaIni.add(i, 'day').format('dddd').toString();
+        
+//        if ((diaSemana != 'Saturday') && (diaSemana != 'Sunday')) {   
+//            ListdiasHabiles.push(FechaIni.format('YYYY-MM-DD'));
+//        }
+//        FechaIni.subtract(i, 'day').format('dddd').toString();
+//    }
+//    return ListdiasHabiles;
+//}
+///*calendarioColombia*/
+//function calendarioColombia(fechaInicio,fechaFin)
+//{
+//    var anio = moment.tz(fechaInicio, "America/Bogota").format("YYYY");
+    
+//    var diasFestivoC = new Array();
+//    var calendarioC = new Array();
+//    var salida =  new Array();
+
+//    var arrayDiasHabiles = diasHabiles(fechaInicio, fechaFin);
+ 
+//    var arrayDiasFestivos = DiasFestivos(anio);
+
+//    var arr = "";
+
+//    arrayDiasFestivos.forEach(function (valor, indice)
+//    {
+//        arr = removeItemFromArr(arrayDiasHabiles, "2017-01-09");
+//    });
+
+//    return arr;
+
+//}
