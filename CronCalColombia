@@ -1,4 +1,3 @@
-
 var http = require('http');
 http.createServer(function (request, response) {
     //Modulos requeridos
@@ -11,13 +10,13 @@ http.createServer(function (request, response) {
     response.writeHead(200, { "Content-Type": "application/json" });
 
     //Fecha inicial
-    var horaInicial = "2017-01-03";
+    var horaInicial = "2017-09-25";
     //Fecha final
-    var horaFinal = "2017-01-05";
+    var horaFinal = "2017-09-28";
     //Horas
-    var horas = new Array("16");
+    var horas = new Array("17");
     //Minutos
-    var minutos = new Array("57","58");
+    var minutos = new Array("15", "17");
 
     cronTask(horaInicial, horaFinal);
 
@@ -30,7 +29,7 @@ http.createServer(function (request, response) {
 
             var dia = moment.tz(valorCalendario, "America/Bogota").format("DD");
             var mes = moment.tz(valorCalendario, "America/Bogota").format("MM");
-            
+
             horas.forEach(function (valorHoras, indiceHoras) {
 
                 var hora = valorHoras;
@@ -39,11 +38,11 @@ http.createServer(function (request, response) {
 
                     var min = valorMinutos;
 
-                    var crontab = min+" "+hora+" "+dia+" "+mes+" "+"*" 
+                    var crontab = min + " " + hora + " " + dia + " " + parseInt(mes,10) + " " + "*"
 
                     response.write(crontab);
                     //min-hora-dia-mes
-                     cron.schedule(crontab, function () {
+                    cron.schedule(crontab, function () {
                         envio();
                     });
                 })
@@ -53,9 +52,9 @@ http.createServer(function (request, response) {
         response.end();
     }
 
-  
 
-  
+
+
 
     //Funcion envio
     function envio() {
@@ -92,7 +91,7 @@ http.createServer(function (request, response) {
 
 
 
- 
+
 
 
     //************************************************FUNCIONES*******************************//
@@ -397,7 +396,7 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //        var mesAbril = "04";
 //        var diaCalculadoAbril = dia;
 //        var fechaAbril = Anio + "-" + mesAbril + "-" + diaCalculadoAbril;
-      
+
 
 //        return dateNew(fechaAbril);
 
@@ -410,10 +409,10 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //}
 ///*Dias festivo*/
 //function DiasFestivos(iAnio) {
-    
+
 //    var Pascua = calcularPascua(iAnio);
 //    var arrayDiasFestivos = new Array();
-    
+
 //    IncluirFecha(arrayDiasFestivos, iAnio+"-"+"01"+"-"+"01"); //Primero de Enero
 //    IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"01"+"-"+"09",false,true)); //Reyes magos
 //    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"03"+"-"+"19",false,true)); //San Jose
@@ -448,12 +447,12 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //    var fecha = dateNew(fecha);
 
 //    var compara = compararArray(ListaDias, fecha);
-   
+
 //    if (compara === false)
 //    {
 //        ListaDias.push(fecha);
 //    }
-        
+
 //    return ListaDias;
 //}
 ///*Remover Array*/
@@ -471,7 +470,7 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //    }
 
 //    for (var i = 0; i < ListaDias.length ; i++) {
-        
+
 //        if (ListaDias[i] === elemento) {
 //            return true;
 //        }
@@ -483,48 +482,48 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //function SiguienteDiaSemana(DiaSemana,fecha , haciaAtras, inclusive)
 //{
 //    var DayOfWeek = CalcularDiaSemana(fecha);
-    
+
 //    var fechaDate = moment.tz(fecha, "America/Bogota");
-     
+
 //            if (inclusive) {
 
 //                if (DayOfWeek === DiaSemana) {
-            
+
 //                    return fechaDate;
 //                }
 
 //            }
 //            else
 //            {
-            
+
 //                if (haciaAtras === true)
 //                {
-                   
+
 //                    fechaDate = fechaDate.subtract(1, 'day');
 //                }   
 
 //                else {
-             
+
 //                        fechaDate = fechaDate.add(1, 'day');
 //                    }
 //              }
 
 
-         
-           
+
+
 //            if (DayOfWeek != DiaSemana) {
 
 //                if (haciaAtras === false) {
-                    
+
 //                    fechaDate = fechaDate.subtract(1, 'day');
-                   
+
 //                }
 //                else {
-                    
+
 //                    fechaDate = fechaDate.add(1, 'day');
 //                }
 //            }
-         
+
 //           return fechaDate;
 //}
 ///*CalcularDiaSemana*/
@@ -538,15 +537,15 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //    var ListdiasHabiles = new Array();
 
 //    var FechaIni = moment.tz(fechaInicio, "America/Bogota");
- 
+
 //    var FechaFin = moment.tz(fechaFinal, "America/Bogota");
-  
+
 //    var xvDiferenciaFechas = FechaFin.diff(FechaIni, 'days') // 1
-   
+
 //    for (var i = 0; i < xvDiferenciaFechas; i++) {
 
 //        var diaSemana = FechaIni.add(i, 'day').format('dddd').toString();
-        
+
 //        if ((diaSemana != 'Saturday') && (diaSemana != 'Sunday')) {   
 //            ListdiasHabiles.push(FechaIni.format('YYYY-MM-DD'));
 //        }
@@ -558,13 +557,13 @@ console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
 //function calendarioColombia(fechaInicio,fechaFin)
 //{
 //    var anio = moment.tz(fechaInicio, "America/Bogota").format("YYYY");
-    
+
 //    var diasFestivoC = new Array();
 //    var calendarioC = new Array();
 //    var salida =  new Array();
 
 //    var arrayDiasHabiles = diasHabiles(fechaInicio, fechaFin);
- 
+
 //    var arrayDiasFestivos = DiasFestivos(anio);
 
 //    var arr = "";
