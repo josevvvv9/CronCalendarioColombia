@@ -1,338 +1,542 @@
-var http = require('http');
-http.createServer(function (request, response) {
-    //Modulos requeridos
-    var moment = require('moment-timezone');
-    var cron = require('node-cron');
-    var request = require('request');
 
 
-    //response.writeHead(200, { 'Content-Type': 'text/plain' });
-    response.writeHead(200, { "Content-Type": "application/json" });
-
-    //Fecha inicial
-    var horaInicial = "2017-09-25";
-    //Fecha final
-    var horaFinal = "2017-09-28";
-    //Horas
-    var horas = new Array("17");
-    //Minutos
-    var minutos = new Array("15", "17");
-
-    cronTask(horaInicial, horaFinal);
-
-    /*Calendario*/
-    function cronTask(horaInicial, horaFinal) {
-
-        var calendario = calendarioColombia(horaInicial, horaFinal);
-
-        calendario.forEach(function (valorCalendario, indiceCalendario) {
-
-            var dia = moment.tz(valorCalendario, "America/Bogota").format("DD");
-            var mes = moment.tz(valorCalendario, "America/Bogota").format("MM");
-
-            horas.forEach(function (valorHoras, indiceHoras) {
-
-                var hora = valorHoras;
-
-                minutos.forEach(function (valorMinutos, indiceMinutos) {
-
-                    var min = valorMinutos;
-
-                    var crontab = min + " " + hora + " " + dia + " " + parseInt(mes,10) + " " + "*"
-
-                    response.write(crontab);
-                    //min-hora-dia-mes
-                    cron.schedule(crontab, function () {
-                        envio();
-                    });
-                })
-            });
-
-        });
-        response.end();
-    }
+/*
+-Crear una funcion que genere a partir de una fecha escojida del sistemas
+ejemplo 7 de cada mes , me indique el dia siguiente dia habil
 
 
+-Realizar peticiones constantes para la validaciones de la cuentas enviadas
+setTimeout("Func1()", 3000);
+
+*/
+
+var moment = require('moment-timezone');
+var cron = require('node-cron');
+var request = require('request');
 
 
+//Fecha inicial
+var horaInicial = "2017-01-01";
+//Fecha final
+var horaFinal = "2017-12-31";
+//Horas
+var horas = new Array("17");
+//Minutos
+var minutos = new Array("15", "17");
 
-    //Funcion envio
-    function envio() {
+//cronTask(horaInicial, horaFinal);
 
-        var http = require('http');
+/*nuevo test*/
 
-        var data = JSON.stringify({
-            'id': '2'
+//var arrDiasEjecucion = new Array("2017-10-07", "2017-10-15", "2017-10-23", "2017-10-28");
+debugger;
+var arrFestivos = DiasFestivos(2017);
+var arrFechasCorte = fechasCorte();
+var arrCalendario = calendarioColombia(horaInicial, horaFinal);
+var arrFechaEjecucion = fechaEjecucion(arrFechasCorte, arrCalendario);
+
+/*Calendario*/
+function cronTask(horaInicial, horaFinal) {
+
+    var calendario = calendarioColombia(horaInicial, horaFinal);
+
+    calendario.forEach(function (valorCalendario, indiceCalendario) {
+
+        var dia = moment.tz(valorCalendario, "America/Bogota").format("DD");
+        var mes = moment.tz(valorCalendario, "America/Bogota").format("MM");
+
+        horas.forEach(function (valorHoras, indiceHoras) {
+
+            var hora = valorHoras;
+
+            minutos.forEach(function (valorMinutos, indiceMinutos) {
+
+                var min = valorMinutos;
+
+                var crontab = min + " " + hora + " " + dia + " " + parseInt(mes, 10) + " " + "*"
+
+                response.write(crontab);
+                //min-hora-dia-mes
+                cron.schedule(crontab, function () {
+                    envio();
+                });
+            })
         });
 
-        var options = {
-            host: 'localhost',
-            port: '49527',
-            path: '/Default.aspx/GetCurrentTime',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-                //'Content-Length': data.length
-            }
-        };
+    });
+    
+}
 
-        var req = http.request(options, function (res) {
-            console.log(res);
-        });
+//Funcion envio
+function envio() {
 
-        //req.write(data);
-        req.end();
-    }
+    var http = require('http');
 
+    var data = JSON.stringify({
+        'id': '2'
+    });
 
-
-
-
-
-
-
-
-
-
-    //************************************************FUNCIONES*******************************//
-
-    /*calcularPascua*/
-    function calcularPascua(Anio) {
-
-        var a, b, c, d, e;
-        var m = 24, n = 5;
-
-
-        if (Anio >= 1583 && Anio <= 1699) {
-            m = 22;
-            n = 2;
+    var options = {
+        host: 'localhost',
+        port: '49527',
+        path: '/Default.aspx/GetCurrentTime',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+            //'Content-Length': data.length
         }
-        else if (Anio >= 1700 && Anio <= 1799) {
-            m = 23;
-            n = 3;
-        }
-        else if (Anio >= 1800 && Anio <= 1899) {
-            m = 23;
-            n = 4;
-        }
-        else if (Anio >= 1900 && Anio <= 2099) {
-            m = 24;
-            n = 5;
-        }
-        else if (Anio >= 2100 && Anio <= 2199) {
-            m = 24;
-            n = 6;
-        }
-        else if (Anio >= 2200 && Anio <= 2299) {
-            m = 25;
-            n = 0;
-        }
-
-        a = Anio % 19;
-        b = Anio % 4;
-        c = Anio % 7;
-        d = ((a * 19) + m) % 30;
-        e = ((2 * b) + (4 * c) + (6 * d) + n) % 7;
-
-
-        var dia = d + e;
-
-
-        if (dia < 10) //Marzo
-        {
-            var mesMarzo = "03";
-            var diaCalculadoMarzo = dia + 22;
-            var fechaMarzo = Anio + "-" + mesMarzo + "-" + diaCalculadoMarzo;
-            return dateNew(fechaMarzo)
-        }
-        else //Abril
-        {
-
-            if (dia == 26)
-                dia = 19;
-            else if (dia == 25 && d == 28 && e == 6 && a > 10)
-                dia = 18;
-            else
-                dia -= 9;
-
-            var mesAbril = "04";
-            var diaCalculadoAbril = dia;
-            var fechaAbril = Anio + "-" + mesAbril + "-" + diaCalculadoAbril;
-
-
-            return dateNew(fechaAbril);
-
-        }
-    }
-    /*nueva date */
-    function dateNew(fecha) {
-        var formatoFecha = moment.tz(fecha, "America/Bogota").format('YYYY-MM-DD');
-        return formatoFecha;
-    }
-    /*Dias festivo*/
-    function DiasFestivos(iAnio) {
-
-        console.log(2017);
-        var Pascua = calcularPascua(iAnio);
-        console.log(Pascua);
-        var arrayDiasFestivos = new Array();
-
-        IncluirFecha(arrayDiasFestivos, iAnio + "-" + "01" + "-" + "01"); //Primero de Enero
-        IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "01" + "-" + "09", false, true)); //Reyes magos
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"03"+"-"+"19",false,true)); //San Jose
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Sunday", Pascua, true, false)); //Domingo de Ramos
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Thursday", Pascua, true,true)); //Jueves Santo
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Friday", Pascua, true,true)); //Viernes Santo
-        //IncluirFecha(arrayDiasFestivos, Pascua); //Pascua
-        //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "05" + "-" + "01"); //Dia del trabajo
-
-
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(42, 'day')); //Ascensión de Jesús
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(63, 'day')); //Corpus Christi
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(70, 'day')); //Sagrado Corazón
-
-
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "06" + "-" + "29")); //san Pedro y san Pablo
-        //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "07" + "-" + "20"); //Grito de Independencia
-        //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "07"); // Batalla de Boyacá
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio+"-"+"08"+"-"+ "15",false,false)); //Asuncion de la virgen
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Día de la Raza
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "12",false,false)); //Todos los Santos
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "01",false,false)); //Independencia de Cartagena
-        //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "11",false,false)); //Independencia de Cartagena
-        //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "08"); // Inmaculada Concepción
-        //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "25"); // Navidad
-        console.log(arrayDiasFestivos);
-        return arrayDiasFestivos;
-    }
-    /*Incluir fecha*/
-    function IncluirFecha(ListaDias, fecha) {
-        var fecha = dateNew(fecha);
-
-        var compara = compararArray(ListaDias, fecha);
-
-        if (compara === false) {
-            ListaDias.push(fecha);
-        }
-
-        return ListaDias;
-    }
-    /*Remover Array*/
-    function removeItemFromArr(arr, item) {
-        return arr.filter(function (e) {
-            return e !== item;
-        });
     };
-    /*compara Array*/
-    function compararArray(ListaDias, elemento) {
 
-        if (ListaDias.length == 0) {
-            return false;
+    var req = http.request(options, function (res) {
+        console.log(res);
+    });
+
+    //req.write(data);
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+//************************************************FUNCIONES*******************************//
+
+/*calcularPascua*/
+function calcularPascua(Anio) {
+
+    var a, b, c, d, e;
+    var m = 24, n = 5;
+
+
+    if (Anio >= 1583 && Anio <= 1699) {
+        m = 22;
+        n = 2;
+    }
+    else if (Anio >= 1700 && Anio <= 1799) {
+        m = 23;
+        n = 3;
+    }
+    else if (Anio >= 1800 && Anio <= 1899) {
+        m = 23;
+        n = 4;
+    }
+    else if (Anio >= 1900 && Anio <= 2099) {
+        m = 24;
+        n = 5;
+    }
+    else if (Anio >= 2100 && Anio <= 2199) {
+        m = 24;
+        n = 6;
+    }
+    else if (Anio >= 2200 && Anio <= 2299) {
+        m = 25;
+        n = 0;
+    }
+
+    a = Anio % 19;
+    b = Anio % 4;
+    c = Anio % 7;
+    d = ((a * 19) + m) % 30;
+    e = ((2 * b) + (4 * c) + (6 * d) + n) % 7;
+
+
+    var dia = d + e;
+
+
+    if (dia < 10) //Marzo
+    {
+        var mesMarzo = "03";
+        var diaCalculadoMarzo = dia + 22;
+        var fechaMarzo = Anio + "-" + mesMarzo + "-" + diaCalculadoMarzo;
+        return dateNew(fechaMarzo)
+    }
+    else //Abril
+    {
+
+        if (dia == 26)
+            dia = 19;
+        else if (dia == 25 && d == 28 && e == 6 && a > 10)
+            dia = 18;
+        else
+            dia -= 9;
+
+        var mesAbril = "04";
+        var diaCalculadoAbril = dia;
+        var fechaAbril = Anio + "-" + mesAbril + "-" + diaCalculadoAbril;
+
+
+        return dateNew(fechaAbril);
+
+    }
+}
+/*nueva date */
+function dateNew(fecha) {
+    var formatoFecha = moment.tz(fecha, "America/Bogota").format('YYYY-MM-DD');
+    return formatoFecha;
+}
+/*Dias festivo*/
+function DiasFestivos(iAnio) {
+
+
+    var Pascua = calcularPascua(iAnio);
+
+    var arrayDiasFestivos = new Array();
+
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "01" + "-" + "01"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "01" + "-" + "09"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "03" + "-" + "20"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "05" + "-" + "01"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "06" + "-" + "03"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "07" + "-" + "20"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "07"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "21"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "10" + "-" + "16"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "11" + "-" + "06"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "11" + "-" + "13"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "08"); //Primero de Enero
+    IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "25"); //Primero de Enero
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "01" + "-" + "09", false, true)); //Reyes magos
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday",iAnio+"-"+"03"+"-"+"20",false,false)); //San Jose
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Sunday", Pascua, true, false)); //Domingo de Ramos
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Thursday", Pascua, true,true)); //Jueves Santo
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Friday", Pascua, true,true)); //Viernes Santo
+    //IncluirFecha(arrayDiasFestivos, Pascua); //Pascua
+    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "05" + "-" + "01"); //Dia del trabajo
+
+
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(42, 'day')); //Ascensión de Jesús
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(63, 'day')); //Corpus Christi
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", Pascua).add(70, 'day')); //Sagrado Corazón
+
+
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "06" + "-" + "03")); //san Pedro y san Pablo
+    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "07" + "-" + "20"); //Grito de Independencia
+    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "08" + "-" + "07"); // Batalla de Boyacá
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio+"-"+"08"+"-"+ "21",false,true)); //Asuncion de la virgen
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "10" + "-" + "16", false, true)); //Día de la Raza
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "06",false,true)); //Todos los Santos
+    //IncluirFecha(arrayDiasFestivos, SiguienteDiaSemana("Monday", iAnio + "-" + "11" + "-" + "13",false,true)); //Independencia de Cartagena
+
+    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "08"); // Inmaculada Concepción
+    //IncluirFecha(arrayDiasFestivos, iAnio + "-" + "12" + "-" + "25"); // Navidad
+
+    return arrayDiasFestivos;
+}
+/*Incluir fecha*/
+function IncluirFecha(ListaDias, fecha) {
+    var fecha = dateNew(fecha);
+
+    var compara = compararArray(ListaDias, fecha);
+
+    if (compara === false) {
+        ListaDias.push(fecha);
+    }
+
+    return ListaDias;
+}
+/*Remover Array*/
+function removeItemFromArr(arr, item) {
+    return arr.filter(function (e) {
+        return e !== item;
+    });
+};
+/*compara Array*/
+function compararArray(ListaDias, elemento) {
+
+    if (ListaDias.length == 0) {
+        return false;
+    }
+
+    for (var i = 0; i < ListaDias.length ; i++) {
+
+        if (ListaDias[i] === elemento) {
+            return true;
         }
+        return false
+    }
 
-        for (var i = 0; i < ListaDias.length ; i++) {
+}
+/*SiguienteDiaSemana*/
+function SiguienteDiaSemana(DiaSemana, fecha, haciaAtras, inclusive) {
+    var DayOfWeek = CalcularDiaSemana(fecha);
 
-            if (ListaDias[i] === elemento) {
-                return true;
-            }
-            return false
+    var fechaDate = moment.tz(fecha, "America/Bogota");
+
+    if (inclusive) {
+
+        if (DayOfWeek === DiaSemana) {
+
+            return fechaDate;
         }
 
     }
-    /*SiguienteDiaSemana*/
-    function SiguienteDiaSemana(DiaSemana, fecha, haciaAtras, inclusive) {
-        var DayOfWeek = CalcularDiaSemana(fecha);
+    else {
 
-        var fechaDate = moment.tz(fecha, "America/Bogota");
+        if (haciaAtras === true) {
+            fechaDate = fechaDate.subtract(1, 'day');
+        }
 
-        if (inclusive) {
+        else {
+            fechaDate = fechaDate.add(1, 'day');
+        }
+    }
 
-            if (DayOfWeek === DiaSemana) {
 
-                return fechaDate;
-            }
+
+
+    if (DayOfWeek != DiaSemana) {
+
+        if (haciaAtras === false) {
+
+            fechaDate = fechaDate.subtract(1, 'day');
 
         }
         else {
 
-            if (haciaAtras === true) {
-                fechaDate = fechaDate.subtract(1, 'day');
-            }
-
-            else {
-                fechaDate = fechaDate.add(1, 'day');
-            }
+            fechaDate = fechaDate.add(1, 'day');
         }
-
-
-
-
-        if (DayOfWeek != DiaSemana) {
-
-            if (haciaAtras === false) {
-
-                fechaDate = fechaDate.subtract(1, 'day');
-
-            }
-            else {
-
-                fechaDate = fechaDate.add(1, 'day');
-            }
-        }
-
-        return fechaDate;
     }
-    /*CalcularDiaSemana*/
-    function CalcularDiaSemana(fecha) {
-        var dt = moment.tz(fecha, "America/Bogota").format('dddd');
-        return dt;
-    };
-    /*diasHabiles*/
-    function diasHabiles(fechaInicio, fechaFinal) {
-        var ListdiasHabiles = new Array();
 
-        var FechaIni = moment.tz(fechaInicio, "America/Bogota");
+    return fechaDate;
+}
+/*CalcularDiaSemana*/
+function CalcularDiaSemana(fecha) {
+    var dt = moment.tz(fecha, "America/Bogota").format('dddd');
+    return dt;
+};
+/*diasHabiles*/
+function diasHabiles(fechaInicio, fechaFinal) {
+    var ListdiasHabiles = new Array();
 
-        var FechaFin = moment.tz(fechaFinal, "America/Bogota");
+    var FechaIni = moment.tz(fechaInicio, "America/Bogota");
 
-        var xvDiferenciaFechas = FechaFin.diff(FechaIni, 'days') // 1
+    var FechaFin = moment.tz(fechaFinal, "America/Bogota");
 
-        for (var i = 0; i < xvDiferenciaFechas; i++) {
+    var xvDiferenciaFechas = FechaFin.diff(FechaIni, 'days') // 1
 
-            var diaSemana = FechaIni.add(i, 'day').format('dddd').toString();
+    for (var i = 0; i < xvDiferenciaFechas; i++) {
 
-            if ((diaSemana != 'Saturday') && (diaSemana != 'Sunday')) {
-                ListdiasHabiles.push(FechaIni.format('YYYY-MM-DD'));
-            }
-            FechaIni.subtract(i, 'day').format('dddd').toString();
+        var diaSemana = FechaIni.add(i, 'day').format('dddd').toString();
+
+        if ((diaSemana != 'Saturday') && (diaSemana != 'Sunday')) {
+            ListdiasHabiles.push(FechaIni.format('YYYY-MM-DD'));
         }
-        return ListdiasHabiles;
+        FechaIni.subtract(i, 'day').format('dddd').toString();
     }
-    /*calendarioColombia*/
-    function calendarioColombia(fechaInicio, fechaFin) {
-        var anio = moment.tz(fechaInicio, "America/Bogota").format("YYYY");
+    return ListdiasHabiles;
+}
+/*calendarioColombia*/
+function calendarioColombia(fechaInicio, fechaFin) {
+   
+    var anio = moment.tz(fechaInicio, "America/Bogota").format("YYYY");
 
-        var diasFestivoC = new Array();
-        var calendarioC = new Array();
-        var salida = new Array();
+    var diasFestivoC = new Array();
+    var calendarioC = new Array();
+    var salida = new Array();
 
-        var arrayDiasHabiles = diasHabiles(fechaInicio, fechaFin);
+    var arrayDiasHabiles = diasHabiles(fechaInicio, fechaFin);
 
-        var arrayDiasFestivos = DiasFestivos(anio);
+    var arrayDiasFestivos = DiasFestivos(anio);
 
-        var arr = "";
+    var arr = "";
 
-        arrayDiasFestivos.forEach(function (valor, indice) {
-            arr = removeItemFromArr(arrayDiasHabiles, "2017-01-09");
+    var Eliminar_Valor =  function (my_array, posicion, cant_valores) {
+        my_array.splice(posicion, cant_valores);
+        return my_array;
+    }
+
+    var respuesta = function (arrayDH) {
+
+        arrayDiasFestivos.forEach(function (valorF, indiceF) {
+            arrayDH.forEach(function (valorD, indiceD) {
+
+                if (valorF == valorD) {
+                    var index = arrayDH.indexOf(valorD);
+                    arr = Eliminar_Valor(arrayDH, index, 1);
+                    respuesta(arr);
+                }
+            });
+
         });
+    }
 
-        return arr;
+    respuesta(arrayDiasHabiles);
+
+    //arr = Eliminar_Valor(arrayDiasHabiles, 5, 1);
+    
+    return arr;
+
+}
+
+
+/*fechasCorte return Array*/
+function fechasCorte() {
+
+    var anio = 2017;
+
+    //Leer de base de datos
+    var dia1 = "07";
+    var dia2 = "15";
+    var dia3 = "23";
+    var dia4 = "28";
+
+    var dias = new Array(dia1, dia2, dia3, dia4);
+
+    var meses = new Array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12");
+
+    var fechas = new Array();
+
+    meses.forEach(function (valorMeses, indice) {
+        dias.forEach(function (valorDias, indice) {
+
+            var fecha = anio.toString() + "-" + valorMeses.toString() + "-" + valorDias.toString();
+            fechas.push(fecha)
+
+        });
+    });
+
+    return fechas;
+
+}
+
+/* fecha ejecucion*/
+function fechaEjecucion(arrDiasEjecucion, arrCalendario) {
+   
+    var arrSalida = new Array();
+
+    var arry = "";
+
+    var vaciar = function clearArray(array) {
+        while (array.length) {
+            array.pop();
+        }
+    }
+
+    var ar = function (arr) {
+
+        if (arr.length > 0 && arrCalendario.length > 0) {
+
+            arrCalendario.forEach(function (valor, indice) {
+                arr.forEach(function (valorD, indiceD) {
+
+                    if (valorD <= valor) {
+                        arrSalida.push(valor);
+                        arry = removeItemFromArr(arr, valorD);
+
+                        ar(arry);
+
+                    }
+
+                });
+
+            });
+
+        }
+        else {
+            vaciar(arrCalendario);
+            return arrSalida;
+        }
 
     }
+
+    ar(arrDiasEjecucion);
+
+    arrSalida.forEach(function (valor, indice) {
+
+        console.log(valor);
+    });
+
+    return arrSalida;
+
+}
+
+var http = require('http');
+http.createServer(function (request, response) {
+    //Modulos requeridos
+   
+    //response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.writeHead(200, { "Content-Type": "application/json" });
+
+ 
+
+
+    response.write("hola");
+    response.end();
+  
+   
 
 }).listen(8081);
 
 console.log('Servidor ejecutándose en http://127.0.0.1:8081/');
+
+///*
+//Calendarios nuevo con dias habiles y sin festivos -> pasar la funcion siguiente dia de la semana
+//para saber que dia crear la tarea
+
+//fechas seleccionadas -> [07/10/2017]
+//array -> foreach ->
+//var date = function SiguienteDiaSemana(DiaSemana, fecha, haciaAtras, inclusive)
+//crear un nuevo array con la fecha
+//*/
+
+//function fechaEjecucion()
+//{
+//    var arrDiasEjecucion = new Array("2017-10-07", "2017-10-15");
+//    var arrDiasSiguiente = new Array();
+//    var arrSalida = new Array();
+
+
+//    var calendario = calendarioColombia("2017-10-01", "2017-10-30");
+
+//    //calendario.forEach(function (valor, indice)
+//    //{
+//    //    var diaSemana = valor.format('dddd');
+//    //    var fecha = valor('YYYY-MM-DD');
+//    //    var siguienteDiaHabil = SiguienteDiaSemana(DiaSemana, fecha, false, true);
+//    //    diasEjecucion.push(siguienteDiaHabil);
+
+//    //})
+
+//    arrDiasEjecucion.forEach(function (valor, indice)
+//    {
+//        var diaSemana = CalcularDiaSemana(valor);
+//        var siguienteDiaHabil = SiguienteDiaSemana(diaSemana, valor, false, true);
+//        arrDiasSiguiente.push(siguienteDiaHabil);
+
+//    })
+
+//    arrDiasSiguiente.forEach(function (valor, indice)
+//    {
+//        var fecha = comparaCalendarioFecha(calendario, valor);
+//        arrSalida.push(fecha);
+//    });
+
+
+//    var comparaCalendarioFecha = function (array, fecha) {
+
+
+//        for (var i = 0; i < array.length ; i++) {
+
+//            if (array[i] === fecha) {
+//                return fecha;
+//            } else {
+//                var fecha = moment.tz(fechaInicio, "America/Bogota").format('YYYY-MM-DD').add(1, 'day');
+//                var diaSemana = CalcularDiaSemana(valor);
+//                var siguienteDiaHabil = SiguienteDiaSemana(diaSemana, valor, false, true);
+//                return siguienteDiaHabil;
+//            }
+//        }
+
+//    };
+//    return arrSalida;
+
+//}
 
 ///*calcularPascua*/
 //function calcularPascua(Anio) {
